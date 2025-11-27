@@ -5,9 +5,19 @@ namespace Core {
   EventBus::EventBus() {
       queue = xQueueCreate(10, sizeof(EventItem)); // buffer 10 event
   }
+
+  EventBus::~EventBus() {
+    if (eventTaskHandle) {
+        vTaskDelete(eventTaskHandle);
+    }
+
+    if (queue) {
+        vQueueDelete(queue);
+    }
+  }
   
   void EventBus::begin() {
-      xTaskCreatePinnedToCore(eventTask, "EventTask", 4096, this, 1, nullptr, 0);
+      xTaskCreatePinnedToCore(eventTask, "EventTask", 4096, this, 1, &eventTaskHandle, 0);
   }
   
   void EventBus::subscribe(EventType type, EventCallback callback) {

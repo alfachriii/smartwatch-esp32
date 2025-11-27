@@ -24,12 +24,15 @@ namespace Core {
   class EventBus {
   public:
       EventBus();
+      ~EventBus();
       void begin();
-  
+
       void subscribe(EventType type, EventCallback callback);
       void publish(EventType type, void* data = nullptr);
   
   private:
+      TaskHandle_t eventTaskHandle = nullptr;
+
       static void eventTask(void* pvParams);
       void dispatch(EventItem item);
   

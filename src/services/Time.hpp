@@ -2,7 +2,13 @@
 #include "../core/EventBus.hpp"
 #include "RTClib.h"
 
-namespace Service{
+namespace Service {
+  struct TimePayload{
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+  };
+  
   class Time {
     public:
       Time(Core::EventBus* bus);

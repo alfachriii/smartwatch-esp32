@@ -2,7 +2,10 @@
 #include "DisplayDriver.hpp"
 #include "EventBus.hpp"
 #include "BaseApp.hpp"
-#include "../apps/HomeApp.hpp"
+
+namespace App {
+  class HomeApp;
+}
 
 namespace Core{
 
@@ -14,18 +17,20 @@ namespace Core{
   class UIManager {
     public:
       UIManager(EventBus* eventBus);
+      ~UIManager();
       void init();
       void switchTo(UiState newState);
       void requestRender();
 
     private:
+      TaskHandle_t uiTaskHandle = nullptr;
       EventBus* eventBus;
       DisplayDriver display;
 
       UiState currentState;
       BaseApp* currentApp;
 
-      App::HomeApp homeApp;
+      App::HomeApp* homeApp;
 
       volatile bool renderRequested;
 

@@ -9,6 +9,6 @@ namespace Core {
       virtual void onEnter() {}
       virtual void onExit() {} 
       virtual void render() = 0;
-      virtual void onEvent(int type, void* data) {} 
+      virtual void onEvent(EventType type, void* data) {} 
   };
 }

@@ -7,8 +7,8 @@ namespace Core {
   public:
       DisplayDriver();
       void init();
+      void homePage();
       void showTime(const char* timeStr);
-      void homePage(const char *timeStr);
   
     private:
       lgfx::Panel_ST7789 _panel;

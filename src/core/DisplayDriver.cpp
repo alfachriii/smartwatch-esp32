@@ -48,18 +48,21 @@ namespace Core {
       drawString("Smartwatch Booting...", 10, 110);       
                                                 
       // sprite init
-      spriteClock.createSprite(120, 80);
+      spriteClock.createSprite(240, 80);
   }
   
-  void DisplayDriver::homePage(const char *timeStr) {
+  void DisplayDriver::homePage() {
     fillScreen(BG_COLOR);
   
     setTextColor(TEXT_COLOR);
   }
   
-  void DisplayDriver::showTime(const char *timeStr){
+  void DisplayDriver::showTime(const char* timeStr){
+    spriteClock.fillSprite(TFT_BLUE);
     spriteClock.setTextColor(TEXT_COLOR);
+    spriteClock.setTextSize(3);
+    spriteClock.setTextDatum(textdatum_t::middle_center);
     spriteClock.drawString(timeStr, spriteClock.width() / 2, spriteClock.height() / 2);
-    spriteClock.pushSprite(60, 80);
+    spriteClock.pushSprite(0, 80);
   }
 }

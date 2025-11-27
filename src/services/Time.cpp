@@ -4,18 +4,12 @@
 
 namespace Service {
 
-  struct TimePayload{
-    uint8_t hour;
-    uint8_t minute;
-    uint8_t second;
-  };
-
   Time::Time(Core::EventBus* bus): eventBus(bus), taskHandle(nullptr) {
 
   }
 
   void Time::init() {
-    Wire.begin(21, 22);
+    Wire.begin(8, 9);
 
     this->rtc.begin();
 
@@ -35,7 +29,18 @@ namespace Service {
   }
 
   void Time::run() {
+    while (true) {
+    if(!rtc.begin()) {
+      TimePayload payload;
+      payload.hour = 5;
+      payload.minute = 5;
+      payload.second = 5;
+    }
+
     DateTime now = rtc.now();
+
+    Serial.printf("[TimeService] now: %02d:%02d:%02d\n",
+                  now.hour(), now.minute(), now.second());
 
     TimePayload payload;
     payload.hour = now.hour();
@@ -43,5 +48,8 @@ namespace Service {
     payload.second = now.second();
 
     eventBus->publish(Core::EventType::TIME_UPDATE, &payload);
+
+    vTaskDelay(pdMS_TO_TICKS(1000));
+  }
   }
 }
