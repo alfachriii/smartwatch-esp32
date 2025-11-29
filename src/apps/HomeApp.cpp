@@ -2,7 +2,7 @@
 #include "../core/EventBus.hpp"
 #include "../core/DisplayDriver.hpp"
 #include "../core/UIManager.hpp"
-#include "../services/Time.hpp"
+#include "../services/TimeService.hpp"
 
 
 namespace App {
@@ -11,11 +11,9 @@ namespace App {
     this->latestMinute = 0;
   }
 
-  void HomeApp::setUi(Core::UIManager* ui) { this->ui = ui; }
-
   void HomeApp::onEnter() {
     display->homePage();
-    
+
     eventBus->subscribe(Core::EventType::TIME_UPDATE, [this](void *data) {
       auto* pData = static_cast<Service::TimePayload*>(data);
 
@@ -30,5 +28,11 @@ namespace App {
     snprintf(buf, sizeof(buf), "%02d:%02d", this->latestHour, this->latestMinute);
 
     display->showTime(buf);
+  }
+
+  void HomeApp::onButton(Service::ButtonPayload btn) {
+    if(btn.id == Service::ButtonID::BTN_SELECT && btn.event == Service::ButtonEvent::Click) {
+      ui->switchTo(Core::UiState::SETTINGS_MENU);
+    }
   }
 }

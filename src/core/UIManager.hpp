@@ -5,6 +5,7 @@
 
 namespace App {
   class HomeApp;
+  class SettingsApp;
 }
 
 namespace Core{
@@ -20,17 +21,20 @@ namespace Core{
       ~UIManager();
       void init();
       void switchTo(UiState newState);
+      void back();
       void requestRender();
+      void dispatchButton(Service::ButtonPayload payload);
 
-    private:
-      TaskHandle_t uiTaskHandle = nullptr;
+      private : TaskHandle_t uiTaskHandle = nullptr;
       EventBus* eventBus;
       DisplayDriver display;
 
+      std::vector<UiState> uiStack;
       UiState currentState;
       BaseApp* currentApp;
 
       App::HomeApp* homeApp;
+      App::SettingsApp* settingsApp;
 
       volatile bool renderRequested;
 

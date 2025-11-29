@@ -1,19 +1,17 @@
 #pragma once
-#include "../core/EventBus.hpp"
-#include "../core/DisplayDriver.hpp"
 #include "../core/BaseApp.hpp"
+#include "../core/DisplayDriver.hpp"
+#include "../core/EventBus.hpp"
 #include "../services/ButtonService.hpp"
 
 namespace Core {
   class UIManager;
-  class BaseApp;
 }
 
 namespace App {
-
-  class HomeApp: public Core::BaseApp {
+  class SettingsApp: public Core::BaseApp {
     public:
-      HomeApp(Core::EventBus* bus, Core::DisplayDriver* disp);
+      SettingsApp(Core::EventBus *bus, Core::DisplayDriver *display);
 
       void render() override;
       void onEnter() override;
@@ -22,8 +20,5 @@ namespace App {
     private:
       Core::EventBus* eventBus;
       Core::DisplayDriver* display;
-
-      uint8_t latestHour;
-      uint8_t latestMinute;
   };
 }

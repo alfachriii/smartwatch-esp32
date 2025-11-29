@@ -1,5 +1,6 @@
-#include "Time.hpp"
+#include "TimeService.hpp"
 #include <Wire.h>
+#include <Arduino.h>
 
 
 namespace Service {
@@ -38,9 +39,6 @@ namespace Service {
     }
 
     DateTime now = rtc.now();
-
-    Serial.printf("[TimeService] now: %02d:%02d:%02d\n",
-                  now.hour(), now.minute(), now.second());
 
     TimePayload payload;
     payload.hour = now.hour();

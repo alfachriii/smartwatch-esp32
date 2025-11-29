@@ -3,13 +3,14 @@
 
 namespace Core {
 
-  class DisplayDriver : public lgfx::LGFX_Device {
+  class DisplayDriver: public lgfx::LGFX_Device {
   public:
       DisplayDriver();
       void init();
       void homePage();
-      void showTime(const char* timeStr);
-  
+      void settingsPage();
+      void showTime(const char *timeStr);
+
     private:
       lgfx::Panel_ST7789 _panel;
       lgfx::Bus_SPI _bus;

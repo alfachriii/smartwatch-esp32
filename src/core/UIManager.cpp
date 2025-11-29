@@ -1,13 +1,14 @@
 #include "UIManager.hpp"
 #include "EventBus.hpp"
 #include "../apps/HomeApp.hpp"
+#include "../apps/SettingsApp.hpp"
 
 namespace Core {
   UIManager::UIManager(EventBus* bus): 
     eventBus(bus) {
 
     this->currentApp = nullptr;
-    this->currentState = UiState::HOME_MENU;
+    this->uiStack.push_back(Core::UiState::HOME_MENU);
     this->renderRequested = true;
   }
 
@@ -18,14 +19,17 @@ namespace Core {
     }
 
     delete homeApp;
+    delete settingsApp;
   }
 
   void UIManager::init() {
     display.init();
 
     this->homeApp = new App::HomeApp(eventBus, &display);
+    this->settingsApp = new App::SettingsApp(eventBus, &display);
 
     homeApp->setUi(this);
+    settingsApp->setUi(this);
 
     switchTo(UiState::HOME_MENU);
 
@@ -53,17 +57,34 @@ namespace Core {
     }
   }
 
+  void UIManager::back() {
+    if(uiStack.size() > 1) uiStack.pop_back();
+
+    this->switchTo(uiStack.back());
+  }
+
   void UIManager::switchTo(UiState newState) {
     if (currentApp) currentApp->onExit();
-      currentState = newState;
 
-      switch (newState) {
-        case UiState::HOME_MENU:
-          currentApp = homeApp;
-          break;
-      }
+    uiStack.push_back(newState);
+    
+    switch (uiStack.back()) {
+      case UiState::HOME_MENU:
+        currentApp = homeApp;
+        break;
+      case UiState::SETTINGS_MENU:
+        currentApp = settingsApp;
+    }
 
-      currentApp->onEnter();
-      requestRender();
+    currentApp->onEnter();
+    requestRender();
   }
+
+  void UIManager::dispatchButton(Service::ButtonPayload payload) {
+    if (currentApp) {
+        currentApp->onButton(payload);
+    }
+  } 
+
+  
 }

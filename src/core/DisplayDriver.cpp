@@ -56,7 +56,11 @@ namespace Core {
   
     setTextColor(TEXT_COLOR);
   }
-  
+
+  void DisplayDriver::settingsPage() {
+    fillScreen(TFT_BROWN);
+  }
+
   void DisplayDriver::showTime(const char* timeStr){
     spriteClock.fillSprite(TFT_BLUE);
     spriteClock.setTextColor(TEXT_COLOR);
