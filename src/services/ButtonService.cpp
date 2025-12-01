@@ -39,25 +39,23 @@ namespace Service {
             if (buttonCallback) buttonCallback({ btn.id, ButtonEvent::LongPress });
             Serial.println("LongPress");
             btn.waitingSecondClick = false;
-            btn.lastState = state;       // PENTING
+            btn.lastState = state;
             return;
         }
 
-        // Sudah menunggu klik kedua
         if (btn.waitingSecondClick) {
             if (now - btn.lastClickTime <= 450) {
                 if (buttonCallback) buttonCallback({ btn.id, ButtonEvent::DoubleClick });
                 Serial.println("DoubleClick");
             }
             btn.waitingSecondClick = false;
-            btn.lastState = state;       // PENTING
+            btn.lastState = state;
             return;
         }
 
-        // Klik pertama
         btn.waitingSecondClick = true;
         btn.lastClickTime = now;
-        btn.lastState = state;           // PENTING
+        btn.lastState = state;
         return;
     }
 
@@ -68,7 +66,6 @@ namespace Service {
         btn.waitingSecondClick = false;
     }
 
-    // SELALU update state
     btn.lastState = state;
 }
 
