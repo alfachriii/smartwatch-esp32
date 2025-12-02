@@ -6,6 +6,7 @@
 namespace App {
   class HomeApp;
   class SettingsApp;
+  class BluetoothApp;
 }
 
 namespace Core{
@@ -13,6 +14,7 @@ namespace Core{
   enum class UiState {
       HOME_MENU,
       SETTINGS_MENU,
+      BLUETOOTH_MENU
   };
   
   class UIManager {
@@ -25,7 +27,8 @@ namespace Core{
       void requestRender();
       void dispatchButton(Service::ButtonPayload payload);
 
-      private : TaskHandle_t uiTaskHandle = nullptr;
+    private: 
+      TaskHandle_t uiTaskHandle = nullptr;
       EventBus* eventBus;
       DisplayDriver display;
 
@@ -35,6 +38,7 @@ namespace Core{
 
       App::HomeApp* homeApp;
       App::SettingsApp* settingsApp;
+      App::BluetoothApp* bluetoothApp;
 
       volatile bool renderRequested;
 

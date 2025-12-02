@@ -4,19 +4,42 @@
 
 namespace Service {
   namespace BLE {
-    void ServerCallbacks::onConnect(NimBLEServer* bleServer, NimBLEConnInfo &connInfo){
-    };
+    NimBLEServer *Ble::bleServer = nullptr;
+
+    void ServerCallbacks::onConnect(NimBLEServer *bleServer, NimBLEConnInfo &connInfo){
+      eventBus->publish(Core::EventType::BLE_ON_CONNECT, nullptr);
+    }
+
+    void ServerCallbacks::onDisconnect(NimBLEServer *bleServer, NimBLEConnInfo &connInfo, int reason) {
+      eventBus->publish(Core::EventType::BLE_ON_DISCONNECT, nullptr);
+    }
 
     uint32_t ServerCallbacks::onPassKeyDisplay() {
       uint32_t randomNumber = (esp_random() % 90000000) + 10000000;
+      eventBus->publish(Core::EventType::BLE_ON_PASSKEY, (void*)&randomNumber);
 
       Serial.printf("[BLE SEC] passkey: %d", randomNumber);
       return randomNumber;
     }
 
-    Ble::Ble(NimBLEServer* server): bleServer(server) {};
+    void ServerCallbacks::onConfirmPassKey(NimBLEConnInfo &connInfo, uint32_t pass_key) {
 
-    void Ble::init() {
+    }
+
+    void ServerCallbacks::onAuthenticationComplete(NimBLEConnInfo &connInfo) {
+      eventBus->publish(Core::EventType::BLE_ON_AUTH_COMP, nullptr);
+      Serial.println("[BLE SEC] Auth Complete, Device Conntected.");
+    }
+
+    void CharacteristicCallbacks::onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) {
+
+    }
+
+
+    Ble::Ble(Core::EventBus *bus): eventBus(bus) {
+    }
+
+    void Ble::bleSetup() {
       NimBLEDevice::init(DEVICE_NAME);
       Serial.println("Starting BLE Server...");
 
@@ -24,19 +47,61 @@ namespace Service {
       NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY);
 
       this->bleServer = NimBLEDevice::createServer();
-      bleServer->setCallbacks(new ServerCallbacks());
+
+      serverCallbacks.eventBus = this->eventBus;
+      serverCallbacks.connectedFlag = &isConnected;
+      serverCallbacks.needAdvertiseFlag = &needAdvertise;
+
+      bleServer->setCallbacks(&serverCallbacks);
 
       this->httpService = bleServer->createService(HTTP_SERVICE_UUID);
       this->httpCmdChar = httpService->createCharacteristic(HTTP_CMD_CHAR_UUID, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC);
 
-      httpCmdChar->setCallbacks(new CharacteriscticCallbacks());
+      httpCmdChar->setCallbacks(new CharacteristicCallbacks());
 
       this->httpNotifyChar = httpService->createCharacteristic(HTTP_NOTIFY_CHAR_UUID, NIMBLE_PROPERTY::NOTIFY);
 
       httpService->start();
 
       this->bleAdvertising = NimBLEDevice::getAdvertising();
-    };
+    }
+
+    void Ble::begin() {
+      xTaskCreatePinnedToCore(
+        bleTaskEntry,
+        "BLE_TASK",
+        4096,
+        this,
+        5,
+        &bleTaskHandle,
+        0
+      );
+    }
+
+    void Ble::bleTaskEntry(void *param) {
+      Ble *self = static_cast<Ble*>(param);
+      self->bleTask(self);
+    }
+
+    void Ble::bleTask(Ble* self) {
+      bleSetup();
+
+      eventBus->subscribe(Core::EventType::BLE_ON_CONNECT, [self](void *data){ self->handleConnect(); });
+      eventBus->subscribe(Core::EventType::BLE_ON_DISCONNECT, [self](void *data){ self->handleDisconnect(); });
+
+      for (;;)
+      {
+
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+      }
+    }
+
+    void Ble::stop() {
+      if (!bleTaskHandle) return;
+
+      vTaskDelete(bleTaskHandle);
+      this->bleTaskHandle = nullptr;
+    }
 
     void Ble::startAdvertising() {
       bleAdvertising->addServiceUUID(httpService->getUUID());
@@ -50,6 +115,14 @@ namespace Service {
     void Ble::stopAdvertising() {
       bleAdvertising->stop();
       Serial.println("[BLE] Stop Advertising...");
+    }
+
+    void Ble::handleConnect() {
+      Serial.println("[BLE] Connect to device..");
+    }
+
+    void Ble::handleDisconnect() {
+      Serial.println("[BLE] Device Disconnected..");
     }
   }
 }

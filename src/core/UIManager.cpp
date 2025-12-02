@@ -2,6 +2,7 @@
 #include "EventBus.hpp"
 #include "../apps/HomeApp.hpp"
 #include "../apps/SettingsApp.hpp"
+#include "../apps/BluetoothApp.hpp"
 
 namespace Core {
   UIManager::UIManager(EventBus* bus): 
@@ -26,10 +27,8 @@ namespace Core {
     display.init();
 
     this->homeApp = new App::HomeApp(eventBus, &display);
-    this->settingsApp = new App::SettingsApp(eventBus, &display);
 
     homeApp->setUi(this);
-    settingsApp->setUi(this);
 
     switchTo(UiState::HOME_MENU);
 
@@ -70,11 +69,21 @@ namespace Core {
     
     switch (uiStack.back()) {
       case UiState::HOME_MENU:
-        currentApp = homeApp;
+        this->currentApp = homeApp;
         break;
       case UiState::SETTINGS_MENU:
-        currentApp = settingsApp;
-    }
+        this->settingsApp = new App::SettingsApp(eventBus, &display);
+        settingsApp->setUi(this);
+
+        this->currentApp = settingsApp;
+        break;
+      case UiState::BLUETOOTH_MENU:
+        this->bluetoothApp = new App::BluetoothApp(eventBus, &display);
+        bluetoothApp->setUi(this);
+
+        this->currentApp = bluetoothApp;
+        break;
+      }
 
     currentApp->onEnter();
     requestRender();

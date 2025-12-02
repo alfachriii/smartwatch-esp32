@@ -1,7 +1,7 @@
 #pragma once
-#include "../core/EventBus.hpp"
-#include "../core/DisplayDriver.hpp"
 #include "../core/BaseApp.hpp"
+#include "../core/DisplayDriver.hpp"
+#include "../core/EventBus.hpp"
 #include "../services/ButtonService.hpp"
 
 namespace Core {
@@ -10,21 +10,17 @@ namespace Core {
 }
 
 namespace App {
-
-  class HomeApp: public Core::BaseApp {
+  class BluetoothApp: public Core::BaseApp {
     public:
-      HomeApp(Core::EventBus* bus, Core::DisplayDriver* disp);
+      BluetoothApp(Core::EventBus *bus, Core::DisplayDriver *display);
 
       void render() override;
       void onEnter() override;
+      void onExit() override;
       void onButton(Service::ButtonPayload payload) override;
 
     private:
-      lgfx::LGFX_Sprite spriteClock;
       Core::EventBus* eventBus;
       Core::DisplayDriver* display;
-
-      uint8_t latestHour;
-      uint8_t latestMinute;
   };
 }

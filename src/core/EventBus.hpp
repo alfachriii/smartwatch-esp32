@@ -7,11 +7,13 @@
 
 
 namespace Core {
-
   enum class EventType {
       TIME_UPDATE,
       SENSOR_UPDATE,
-      BUTTON_PRESSED
+      BLE_ON_CONNECT,
+      BLE_ON_DISCONNECT,
+      BLE_ON_PASSKEY,
+      BLE_ON_AUTH_COMP
   };
   
   struct EventItem {

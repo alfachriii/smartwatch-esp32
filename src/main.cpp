@@ -3,10 +3,12 @@
 #include "./core/UIManager.hpp"
 #include "./core/DisplayDriver.hpp"
 #include "./services/ButtonService.hpp"
+#include "./services/BleService.hpp"
 #include <Arduino.h>
 
 Core::EventBus eventBus;
 Core::UIManager ui(&eventBus);
+Service::BLE::Ble ble(&eventBus);
 Service::Time timeService(&eventBus);
 Service::Button buttonService;
 
@@ -17,6 +19,7 @@ void setup() {
   buttonService.addButton(Service::ButtonID::BTN_SELECT, 2);
   buttonService.addButton(Service::ButtonID::BTN_BACK, 1);
 
+  ble.begin();
   eventBus.begin();
   ui.init();
 

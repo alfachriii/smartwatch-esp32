@@ -4,7 +4,7 @@
 
 namespace Core {
 
-  DisplayDriver::DisplayDriver(): spriteClock(this), spriteMenu(this) {
+  DisplayDriver::DisplayDriver(){
       {
           auto cfg = _bus.config();
           cfg.spi_host = SPI2_HOST;
@@ -45,28 +45,6 @@ namespace Core {
       fillScreen(TFT_BLACK);
       setTextColor(TFT_WHITE, TFT_BLACK);
       setTextSize(2);
-      drawString("Smartwatch Booting...", 10, 110);       
-                                                
-      // sprite init
-      spriteClock.createSprite(240, 80);
-  }
-  
-  void DisplayDriver::homePage() {
-    fillScreen(BG_COLOR);
-  
-    setTextColor(TEXT_COLOR);
-  }
-
-  void DisplayDriver::settingsPage() {
-    fillScreen(TFT_BROWN);
-  }
-
-  void DisplayDriver::showTime(const char* timeStr){
-    spriteClock.fillSprite(TFT_BLUE);
-    spriteClock.setTextColor(TEXT_COLOR);
-    spriteClock.setTextSize(3);
-    spriteClock.setTextDatum(textdatum_t::middle_center);
-    spriteClock.drawString(timeStr, spriteClock.width() / 2, spriteClock.height() / 2);
-    spriteClock.pushSprite(0, 80);
+      drawString("Smartwatch Booting...", 10, 110); 
   }
 }
