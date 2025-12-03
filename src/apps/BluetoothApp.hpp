@@ -3,6 +3,9 @@
 #include "../core/DisplayDriver.hpp"
 #include "../core/EventBus.hpp"
 #include "../services/ButtonService.hpp"
+#include "../services/TimeService.hpp"
+#include "../core/UIManager.hpp"
+#include "../ui/UiButton.hpp"
 
 namespace Core {
   class UIManager;
@@ -22,5 +25,10 @@ namespace App {
     private:
       Core::EventBus* eventBus;
       Core::DisplayDriver* display;
+      Ui::UIButton *uiButtons[5];
+      int selectedIndex;
+
+      Service::Times latestTime;
+      float latestBattPercent;
   };
 }

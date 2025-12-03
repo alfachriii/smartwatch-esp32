@@ -32,7 +32,7 @@ namespace Service {
   void Time::run() {
     while (true) {
     if(!rtc.begin()) {
-      TimePayload payload;
+      Times payload;
       payload.hour = 5;
       payload.minute = 5;
       payload.second = 5;
@@ -40,7 +40,7 @@ namespace Service {
 
     DateTime now = rtc.now();
 
-    TimePayload payload;
+    Times payload;
     payload.hour = now.hour();
     payload.minute = now.minute();
     payload.second = now.second();

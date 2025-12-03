@@ -3,6 +3,7 @@
 #include "../core/DisplayDriver.hpp"
 #include "../core/BaseApp.hpp"
 #include "../services/ButtonService.hpp"
+#include "../services/TimeService.hpp"
 
 namespace Core {
   class UIManager;
@@ -24,7 +25,6 @@ namespace App {
       Core::EventBus* eventBus;
       Core::DisplayDriver* display;
 
-      uint8_t latestHour;
-      uint8_t latestMinute;
+      Service::Times latestTime;
   };
 }

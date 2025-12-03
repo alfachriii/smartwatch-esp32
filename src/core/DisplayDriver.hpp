@@ -7,6 +7,7 @@ namespace Core {
   public:
       DisplayDriver();
       void init();
+      void renderStatusBar(char *timeBuf, float &battPercent);
 
     private:
       lgfx::Panel_ST7789 _panel;

@@ -45,6 +45,10 @@ namespace Core {
       fillScreen(TFT_BLACK);
       setTextColor(TFT_WHITE, TFT_BLACK);
       setTextSize(2);
-      drawString("Smartwatch Booting...", 10, 110); 
+      drawString("Smartwatch Booting...", 10, 110);
+  }
+
+  void DisplayDriver::renderStatusBar(char *timeBuf, float &battPercent) {
+    // TODO: RENDER TIME, RENDER BATT INDICATOR
   }
 }

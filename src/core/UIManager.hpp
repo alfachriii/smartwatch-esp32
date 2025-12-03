@@ -2,6 +2,8 @@
 #include "DisplayDriver.hpp"
 #include "EventBus.hpp"
 #include "BaseApp.hpp"
+#include <etl/vector.h>
+#include <etl/array.h>
 
 namespace App {
   class HomeApp;
@@ -32,7 +34,7 @@ namespace Core{
       EventBus* eventBus;
       DisplayDriver display;
 
-      std::vector<UiState> uiStack;
+      etl::vector<UiState, 10> uiStack;
       UiState currentState;
       BaseApp* currentApp;
 

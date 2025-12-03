@@ -8,8 +8,8 @@
 
 namespace App {
   HomeApp::HomeApp(Core::EventBus* bus, Core::DisplayDriver* disp): eventBus(bus), display(disp) {
-    this->latestHour = 0;
-    this->latestMinute = 0;
+    this->latestTime.hour = 0;
+    this->latestTime.minute = 0;
     this->spriteClock = nullptr;
   }
 
@@ -23,10 +23,9 @@ namespace App {
 
     // subscribe event
     eventBus->subscribe(Core::EventType::TIME_UPDATE, [this](void *data) {
-      auto* pData = static_cast<Service::TimePayload*>(data);
+      auto* pData = static_cast<Service::Times*>(data);
 
-      this->latestHour = pData->hour;
-      this->latestMinute = pData->minute;
+      this->latestTime = *pData;
 
       ui->requestRender(); 
     });
@@ -34,7 +33,7 @@ namespace App {
 
   void HomeApp::render() {
     char timeBuf[16];
-    snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d", this->latestHour, this->latestMinute);
+    snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d", this->latestTime.hour, this->latestTime.minute);
 
     spriteClock.fillSprite(TFT_BLUE);
     spriteClock.setTextColor(TEXT_COLOR);

@@ -2,10 +2,11 @@
 #include <functional>
 #include "../services/ButtonService.hpp"
 
+
 namespace Core {
   class UIManager;
   class DisplayDriver;
-
+  
   class BaseApp {
   public:
     virtual ~BaseApp() = default;

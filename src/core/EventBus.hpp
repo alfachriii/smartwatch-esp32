@@ -13,7 +13,8 @@ namespace Core {
       BLE_ON_CONNECT,
       BLE_ON_DISCONNECT,
       BLE_ON_PASSKEY,
-      BLE_ON_AUTH_COMP
+      BLE_ON_AUTH_COMP,
+      BATT_UPDATE,
   };
   
   struct EventItem {

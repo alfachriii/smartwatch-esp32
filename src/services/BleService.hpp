@@ -8,8 +8,6 @@ namespace Service {
     class ServerCallbacks: public NimBLEServerCallbacks {
       public:
         Core::EventBus *eventBus;
-        bool *connectedFlag;
-        bool  *needAdvertiseFlag;
 
         void onConnect(NimBLEServer *bleServer, NimBLEConnInfo &connInfo) override;
         void onDisconnect(NimBLEServer *bleServer, NimBLEConnInfo &connInfo, int reason) override;
@@ -30,8 +28,9 @@ namespace Service {
       void bleSetup();
       void startAdvertising();
       void stopAdvertising();
-      void handleConnect();
-      void handleDisconnect();
+      void handleConnect(void *data);
+      void handleAuthComplete(void *data);
+      void handleDisconnect(void *data);
 
     private:
       Core::EventBus *eventBus;
@@ -42,6 +41,8 @@ namespace Service {
       NimBLECharacteristic *httpCmdChar = nullptr;
       NimBLECharacteristic *httpNotifyChar = nullptr;
       NimBLEAdvertising *bleAdvertising = nullptr;
+      NimBLEConnInfo *bondedDevice = nullptr;
+      uint16_t connectedDevice = 0;
       TaskHandle_t bleTaskHandle = nullptr;
 
       bool isConnected = false;

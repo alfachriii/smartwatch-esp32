@@ -3,7 +3,7 @@
 #include "RTClib.h"
 
 namespace Service {
-  struct TimePayload{
+  struct Times{
     uint8_t hour;
     uint8_t minute;
     uint8_t second;

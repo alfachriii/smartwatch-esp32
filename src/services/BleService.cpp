@@ -7,7 +7,7 @@ namespace Service {
     NimBLEServer *Ble::bleServer = nullptr;
 
     void ServerCallbacks::onConnect(NimBLEServer *bleServer, NimBLEConnInfo &connInfo){
-      eventBus->publish(Core::EventType::BLE_ON_CONNECT, nullptr);
+      eventBus->publish(Core::EventType::BLE_ON_CONNECT, (void*)&connInfo);
     }
 
     void ServerCallbacks::onDisconnect(NimBLEServer *bleServer, NimBLEConnInfo &connInfo, int reason) {
@@ -47,11 +47,7 @@ namespace Service {
       NimBLEDevice::setSecurityIOCap(BLE_HS_IO_DISPLAY_ONLY);
 
       this->bleServer = NimBLEDevice::createServer();
-
       serverCallbacks.eventBus = this->eventBus;
-      serverCallbacks.connectedFlag = &isConnected;
-      serverCallbacks.needAdvertiseFlag = &needAdvertise;
-
       bleServer->setCallbacks(&serverCallbacks);
 
       this->httpService = bleServer->createService(HTTP_SERVICE_UUID);
@@ -85,12 +81,12 @@ namespace Service {
 
     void Ble::bleTask(Ble* self) {
       bleSetup();
+      
+      eventBus->subscribe(Core::EventType::BLE_ON_CONNECT, [self](void *data){ self->handleConnect(data); });
+      eventBus->subscribe(Core::EventType::BLE_ON_DISCONNECT, [self](void *data){ self->handleDisconnect(data); });
+      eventBus->subscribe(Core::EventType::BLE_ON_AUTH_COMP, [self](void *data) { self->handleAuthComplete(data); });
 
-      eventBus->subscribe(Core::EventType::BLE_ON_CONNECT, [self](void *data){ self->handleConnect(); });
-      eventBus->subscribe(Core::EventType::BLE_ON_DISCONNECT, [self](void *data){ self->handleDisconnect(); });
-
-      for (;;)
-      {
+      for (;;) {
 
         vTaskDelay(50 / portTICK_PERIOD_MS);
       }
@@ -117,12 +113,29 @@ namespace Service {
       Serial.println("[BLE] Stop Advertising...");
     }
 
-    void Ble::handleConnect() {
+    void Ble::handleConnect(void *data) {
       Serial.println("[BLE] Connect to device..");
+
+      NimBLEConnInfo *connInfo = static_cast<NimBLEConnInfo *>(data);
+      this->connectedDevice = connInfo->getConnHandle();
+      this->stopAdvertising();
     }
 
-    void Ble::handleDisconnect() {
+    void Ble::handleDisconnect(void *data) {
+      this->startAdvertising();
+      this->connectedDevice = NULL;
       Serial.println("[BLE] Device Disconnected..");
+    }
+    
+    void Ble::handleAuthComplete(void *data) {
+      NimBLEConnInfo *connInfo = static_cast<NimBLEConnInfo *>(data);
+
+      if(!connInfo->isEncrypted()) {
+        bleServer->disconnect(connectedDevice);
+
+        Serial.printf("[BLE SEC] Encrypt connection failed, Diconnect device..\n");
+        return;
+      }
     }
   }
 }
