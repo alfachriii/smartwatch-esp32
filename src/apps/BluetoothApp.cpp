@@ -5,30 +5,33 @@ namespace App {
   BluetoothApp::BluetoothApp(Core::EventBus *bus, Core::DisplayDriver *disp): eventBus(bus), display(disp) {};
 
   void BluetoothApp::onEnter() {
-    eventBus->subscribe(Core::EventType::TIME_UPDATE, [this](void *data) {
+    // subscribe to event
+    eventBus->subscribe(Core::EventType::TIME_UPDATE, this, [this](void *data) {
       Service::Times *updatedData = static_cast<Service::Times*>(data); 
       this->latestTime = *updatedData;
       
       ui->requestRender();
     });
 
-    eventBus->subscribe(Core::EventType::BATT_UPDATE, [this](void *data) {
+    eventBus->subscribe(Core::EventType::BATT_UPDATE, this, [this](void *data) {
       float *updatedData = static_cast<float*>(data); 
       this->latestBattPercent = *updatedData;
       
       ui->requestRender();
     });
 
+    // ui button init
     Ui::UIButton backButton(display, Ui::UIButtonType::BACK_BUTTON);
-
     this->uiButtons[0] = &backButton;
 
     display->fillScreen(BG_COLOR);
   }
 
   void BluetoothApp::onExit() {
+    eventBus->unsubscribe(Core::EventType::TIME_UPDATE, this);
+    eventBus->unsubscribe(Core::EventType::BATT_UPDATE, this);
 
-    delete this;
+    this->selectedIndex = 0;
   }
 
   void BluetoothApp::render() {

@@ -22,13 +22,17 @@ namespace App {
     spriteClock.createSprite(240, 80);
 
     // subscribe event
-    eventBus->subscribe(Core::EventType::TIME_UPDATE, [this](void *data) {
+    eventBus->subscribe(Core::EventType::TIME_UPDATE, this, [this](void *data) {
       auto* pData = static_cast<Service::Times*>(data);
 
       this->latestTime = *pData;
 
       ui->requestRender(); 
     });
+  }
+
+  void HomeApp::onExit() {
+    eventBus->unsubscribe(Core::EventType::TIME_UPDATE, this);
   }
 
   void HomeApp::render() {
@@ -45,7 +49,7 @@ namespace App {
 
   void HomeApp::onButton(Service::ButtonPayload btn) {
     if(btn.id == Service::ButtonID::BTN_SELECT && btn.event == Service::ButtonEvent::Click) {
-      ui->switchTo(Core::UiState::SETTINGS_MENU);
+      ui->switchTo(Core::UiState::SETTINGS_MENU, true);
     }
   }
 }

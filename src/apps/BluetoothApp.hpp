@@ -26,7 +26,7 @@ namespace App {
       Core::EventBus* eventBus;
       Core::DisplayDriver* display;
       Ui::UIButton *uiButtons[5];
-      int selectedIndex;
+      int selectedIndex = 0;
 
       Service::Times latestTime;
       float latestBattPercent;

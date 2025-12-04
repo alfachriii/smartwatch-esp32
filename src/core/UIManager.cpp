@@ -27,10 +27,12 @@ namespace Core {
     display.init();
 
     this->homeApp = new App::HomeApp(eventBus, &display);
+    this->bluetoothApp = new App::BluetoothApp(eventBus, &display);
 
     homeApp->setUi(this);
+    bluetoothApp->setUi(this);
 
-    switchTo(UiState::HOME_MENU);
+    switchTo(UiState::HOME_MENU, true);
 
     xTaskCreatePinnedToCore(
       uiTaskEntry, "UiTask", 4096, this, 1, &uiTaskHandle, 1
@@ -59,10 +61,10 @@ namespace Core {
   void UIManager::back() {
     if(uiStack.size() > 1) uiStack.pop_back();
 
-    this->switchTo(uiStack.back());
+    this->switchTo(uiStack.back(), false);
   }
 
-  void UIManager::switchTo(UiState newState) {
+  void UIManager::switchTo(UiState newState, bool isPush) {
     if (currentApp) currentApp->onExit();
 
     uiStack.push_back(newState);
@@ -72,15 +74,9 @@ namespace Core {
         this->currentApp = homeApp;
         break;
       case UiState::SETTINGS_MENU:
-        this->settingsApp = new App::SettingsApp(eventBus, &display);
-        settingsApp->setUi(this);
-
         this->currentApp = settingsApp;
         break;
       case UiState::BLUETOOTH_MENU:
-        this->bluetoothApp = new App::BluetoothApp(eventBus, &display);
-        bluetoothApp->setUi(this);
-
         this->currentApp = bluetoothApp;
         break;
       }

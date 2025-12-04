@@ -20,8 +20,23 @@ namespace Core {
       xTaskCreatePinnedToCore(eventTask, "EventTask", 4096, this, 1, &eventTaskHandle, 0);
   }
   
-  void EventBus::subscribe(EventType type, EventCallback callback) {
-      listeners[type].push_back(callback);
+  void EventBus::subscribe(EventType type, void *owner, EventCallback callback) {
+      listeners[type].push_back({owner, callback});
+  }
+
+  void EventBus::unsubscribe(EventType type, void* owner) {
+    auto it = listeners.find(type);
+    if (it == listeners.end()) return;
+
+    auto& vec = it->second;
+
+    for (size_t i = 0; i < vec.size(); ) {
+        if (vec[i].owner == owner) {
+          vec.erase(vec.begin() + i);
+          return;
+        }
+        i++;
+    }
   }
   
   void EventBus::publish(EventType type, void* data) {
@@ -43,9 +58,9 @@ namespace Core {
   void EventBus::dispatch(EventItem item) {
       auto it = listeners.find(item.type);
       if (it != listeners.end()) {
-          for (auto& cb : it->second) {
-              cb(item.data);
-          }
+        for (auto& l : listeners[item.type]) {
+          l.callback(item.data);
+        }
       }
   }
 

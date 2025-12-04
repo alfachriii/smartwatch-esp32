@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <vector>
+#include <unordered_map>
 #include <functional>
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
@@ -21,6 +22,11 @@ namespace Core {
       EventType type;
       void* data;
   };
+
+  struct Listener {
+    void* owner;
+    EventCallback callback;
+  };
   
   using EventCallback = std::function<void(void *)>;
   
@@ -30,7 +36,8 @@ namespace Core {
       ~EventBus();
       void begin();
 
-      void subscribe(EventType type, EventCallback callback);
+      void subscribe(EventType type, void *owner, EventCallback cb);
+      void unsubscribe(EventType type, void* owner);
       void publish(EventType type, void* data = nullptr);
   
   private:
@@ -39,7 +46,7 @@ namespace Core {
       static void eventTask(void* pvParams);
       void dispatch(EventItem item);
   
-      std::map<EventType, std::vector<EventCallback>> listeners;
+      std::unordered_map<EventType, std::vector<Listener>> listeners;
       QueueHandle_t queue;
   };
   

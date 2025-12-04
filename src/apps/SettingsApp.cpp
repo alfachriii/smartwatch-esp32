@@ -11,7 +11,7 @@ namespace App {
 
   void SettingsApp::onExit() {
 
-    delete this;
+    
   }
 
   void SettingsApp::render() {

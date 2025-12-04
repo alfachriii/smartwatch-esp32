@@ -24,7 +24,7 @@ namespace Core{
       UIManager(EventBus* eventBus);
       ~UIManager();
       void init();
-      void switchTo(UiState newState);
+      void switchTo(UiState newState, bool isPush);
       void back();
       void requestRender();
       void dispatchButton(Service::ButtonPayload payload);

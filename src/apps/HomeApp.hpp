@@ -18,6 +18,7 @@ namespace App {
 
       void render() override;
       void onEnter() override;
+      void onExit() override;
       void onButton(Service::ButtonPayload payload) override;
 
     private:
