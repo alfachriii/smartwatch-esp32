@@ -12,7 +12,8 @@ Service::BLE::Ble ble(&eventBus);
 Service::Time timeService(&eventBus);
 Service::Button buttonService;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.println("Booting....");
 
@@ -23,13 +24,15 @@ void setup() {
   eventBus.begin();
   ui.init();
 
-  buttonService.buttonCallback = [&](Service::ButtonPayload payload) {
+  buttonService.buttonCallback = [&](Service::ButtonPayload payload)
+  {
     ui.dispatchButton(payload);
   };
 
   timeService.init();
 }
 
-void loop() {
+void loop()
+{
   buttonService.update();
 }

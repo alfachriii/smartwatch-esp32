@@ -16,6 +16,9 @@ namespace Core {
       BLE_ON_PASSKEY,
       BLE_ON_AUTH_COMP,
       BATT_UPDATE,
+      WIFI_CONNECTED,
+      WIFI_DISCONNECTED,
+      WIFI_UNABLE_TO_CONNECT,
   };
   
   struct EventItem {

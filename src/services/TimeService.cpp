@@ -24,7 +24,7 @@ namespace Service {
     );
   }
 
-  void Time::taskEntry(void* pvParameters) {
+  void Time::taskEntry(void *pvParameters) {
     Time* service = static_cast<Time*>(pvParameters);
     service->run();
   }

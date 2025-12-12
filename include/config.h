@@ -20,3 +20,7 @@
 #define HTTP_SERVICE_UUID     "8aaca133-6aee-4a06-92a8-5315073fa0f3"
 #define HTTP_CMD_CHAR_UUID    "dcad77b2-5e91-4d65-a2db-596d6685ccb2"
 #define HTTP_NOTIFY_CHAR_UUID "1f05374b-18c8-4d5f-a670-f3d4a151ee5f"
+
+// WIFI
+#define WIFI_SSID "KOCAK_YOU2"
+#define WIFI_PASSWD "jajuliedyuk"
