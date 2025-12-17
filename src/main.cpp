@@ -4,11 +4,13 @@
 #include "./core/DisplayDriver.hpp"
 #include "./services/ButtonService.hpp"
 #include "./services/BleService.hpp"
+#include "./services/WifiService.hpp"
 #include <Arduino.h>
 
 Core::EventBus eventBus;
 Core::UIManager ui(&eventBus);
 Service::BLE::Ble ble(&eventBus);
+Service::Wifi wifi(&eventBus);
 Service::Time timeService(&eventBus);
 Service::Button buttonService;
 
@@ -35,4 +37,5 @@ void setup()
 void loop()
 {
   buttonService.update();
+  wifi.update();
 }

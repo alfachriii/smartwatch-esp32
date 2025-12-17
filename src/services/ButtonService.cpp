@@ -15,7 +15,7 @@ namespace Service {
     this->buttonCount++;
   }
 
-  void Button::update() {
+  void Button::update() { //    <--- Called in main.cpp loop.
     for (uint8_t i = 0; i < this->buttonCount; i++) {
         handleButton(this->buttons[i]);
     }

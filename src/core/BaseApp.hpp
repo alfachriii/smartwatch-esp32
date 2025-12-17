@@ -1,12 +1,13 @@
 #pragma once
 #include <functional>
 #include "../services/ButtonService.hpp"
+#include "../ui/UiButton.hpp"
 
 
 namespace Core {
   class UIManager;
   class DisplayDriver;
-  
+
   class BaseApp {
   public:
     virtual ~BaseApp() = default;
@@ -21,5 +22,10 @@ namespace Core {
   protected:
     UIManager* ui = nullptr;
     DisplayDriver* display;
+
+
+    Ui::UIButton *uiButtons[5];
+    size_t selectedIndex = 0;
+    size_t uiButtonCount = 0;
   };
 }

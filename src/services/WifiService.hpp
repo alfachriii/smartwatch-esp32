@@ -1,20 +1,34 @@
+#pragma once
 #include "../core/EventBus.hpp"
+#include "WiFi.h"
 
 namespace Service {
-    class Wifi {
-        public:
-            Wifi(Core::EventBus *bus);
-            void begin();
-            void connect(bool isReconnect);
-            void handleWifiEvent(WiFiEvent_t &event, WiFiEventInfo_t &info); 
-        private:
-            Core::EventBus *eventBus;
-            TaskHandle_t taskHandle;
-            int status;
-            bool isConnecting;
-            uint32_t connectStart;
+  enum class WifiState
+  {
+    CONNECTING,
+    FAIL_TO_CONNECT,
+    CONNECTED,
+    DISCONNECTED,
+  };
 
-            void wifiTaskEntry(void *pv);
-            void wifiTask();
-    };
+  class Wifi
+  {
+  public:
+    Wifi(Core::EventBus *bus);
+    void init();
+    int connect();
+    void disconnect();
+    uint16_t scan();
+    void update();
+    void handleWeatherFetchReq();
+
+    WifiState state;
+    
+    private:
+    Core::EventBus *eventBus;
+    uint32_t connectStart;
+    static Wifi *wifiInstance;
+
+    static void handleWifiEvent(WiFiEvent_t &event, WiFiEventInfo_t &info);
+  };
 }

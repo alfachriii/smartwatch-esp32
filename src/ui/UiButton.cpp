@@ -5,7 +5,7 @@ namespace Ui {
   UIButton::UIButton(Core::DisplayDriver *disp, UIButtonType buttonType): display(disp) {
     switch (buttonType)
     {
-    case UIButtonType::BACK_BUTTON:
+    case UIButtonType::BACK_BTN:
       this->width = 8;
       this->height = 10;
       break;

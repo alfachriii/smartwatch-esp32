@@ -1,8 +1,12 @@
+#pragma once
 #include "../core/DisplayDriver.hpp"
 
 namespace Ui {
   enum class UIButtonType {
-    BACK_BUTTON,
+    BACK_BTN,
+    WEATHER_ICON_BTN,
+    BLE_ICON_BTN,
+    MENU_BTN
   };
 
   class UIButton {

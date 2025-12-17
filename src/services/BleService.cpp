@@ -82,9 +82,9 @@ namespace Service {
     void Ble::bleTask(Ble* self) {
       bleSetup();
       
-      eventBus->subscribe(Core::EventType::BLE_ON_CONNECT, [self](void *data){ self->handleConnect(data); });
-      eventBus->subscribe(Core::EventType::BLE_ON_DISCONNECT, [self](void *data){ self->handleDisconnect(data); });
-      eventBus->subscribe(Core::EventType::BLE_ON_AUTH_COMP, [self](void *data) { self->handleAuthComplete(data); });
+      eventBus->subscribe(Core::EventType::BLE_ON_CONNECT, self, [self](void *data){ self->handleConnect(data); });
+      eventBus->subscribe(Core::EventType::BLE_ON_DISCONNECT, self, [self](void *data){ self->handleDisconnect(data); });
+      eventBus->subscribe(Core::EventType::BLE_ON_AUTH_COMP, self, [self](void *data) { self->handleAuthComplete(data); });
 
       for (;;) {
 

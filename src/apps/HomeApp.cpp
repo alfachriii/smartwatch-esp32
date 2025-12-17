@@ -4,6 +4,7 @@
 #include "../core/DisplayDriver.hpp"
 #include "../core/UIManager.hpp"
 #include "../services/TimeService.hpp"
+#include "../ui/UiButton.hpp"
 
 
 namespace App {
@@ -11,6 +12,17 @@ namespace App {
     this->latestTime.hour = 0;
     this->latestTime.minute = 0;
     this->spriteClock = nullptr;
+
+    // ui button init
+    Ui::UIButton weatherButton(display, Ui::UIButtonType::WEATHER_ICON_BTN);
+    Ui::UIButton bleButton(display, Ui::UIButtonType::BLE_ICON_BTN);
+    Ui::UIButton menuButton(display, Ui::UIButtonType::MENU_BTN);
+    this->uiButtons[0] = &weatherButton;
+    this->uiButtonCount++;
+    this->uiButtons[0] = &bleButton;
+    this->uiButtonCount++;
+    this->uiButtons[0] = &menuButton;
+    this->uiButtonCount++;
   }
 
   void HomeApp::onEnter() {
@@ -33,6 +45,8 @@ namespace App {
 
   void HomeApp::onExit() {
     eventBus->unsubscribe(Core::EventType::TIME_UPDATE, this);
+
+    this->selectedIndex = 0;
   }
 
   void HomeApp::render() {
@@ -45,6 +59,14 @@ namespace App {
     spriteClock.setTextDatum(textdatum_t::middle_center);
     spriteClock.drawString(timeBuf, spriteClock.width() / 2, spriteClock.height() / 2);
     spriteClock.pushSprite(0, 80);
+
+    for (size_t btnIndex = 0; btnIndex < this->uiButtonCount; btnIndex++) {
+      if(btnIndex == this->selectedIndex) {
+        uiButtons[btnIndex]->render(true);
+        return;
+      }
+      uiButtons[btnIndex]->render(false);
+    }
   }
 
   void HomeApp::onButton(Service::ButtonPayload btn) {

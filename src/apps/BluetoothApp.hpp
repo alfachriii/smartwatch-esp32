@@ -25,8 +25,6 @@ namespace App {
     private:
       Core::EventBus* eventBus;
       Core::DisplayDriver* display;
-      Ui::UIButton *uiButtons[5];
-      int selectedIndex = 0;
 
       Service::Times latestTime;
       float latestBattPercent;

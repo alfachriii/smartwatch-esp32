@@ -4,77 +4,74 @@
 
 namespace Service
 {
-    Wifi::Wifi(Core::EventBus *bus) : eventBus(bus) {
-
+    Wifi::Wifi(Core::EventBus *bus) : eventBus(bus), state(WifiState::DISCONNECTED) {
+      wifiInstance = this;
     };
 
-    void Wifi::begin()
-    {
-
+    void Wifi::init()
+     {
         WiFi.mode(WIFI_STA);
 
-        xTaskCreate(wifiTaskEntry, "WifiTask", 2048, this, 2, &taskHandle);
+        eventBus->subscribe(Core::EventType::CONNECT_TO_WIFI, this, [this](void *data)
+                            { this->connect(); });
 
-        eventBus->subscribe(Core::EventType::WIFI_DISCONNECTED, this, [this](void *data)
-                            { this->connect(false); })
+        eventBus->subscribe(Core::EventType::DISCONNECT_FROM_WIFI, this, [this](void *data)
+                            { this->disconnect(); });
+
+        eventBus->subscribe(Core::EventType::WEATHER_FETCH_WIFI, this, [this](void *data)
+                            { this->handleWeatherFetchReq(); });
+     }
+
+    int Wifi::connect()
+    {
+      WiFi.begin(WIFI_SSID, WIFI_PASSWD);
+
+      this->connectStart = millis();
+      this->state = WifiState::CONNECTING;
     }
 
-    void Wifi::wifiTaskEntry(void *pvParameters)
-    {
-        Wifi *service = static_cast<Wifi *>(pvParameters);
-        service->wifiTask();
-    }
+    void Wifi::disconnect() { WiFi.disconnect(); };
 
-    void Wifi::wifiTask()
-    {
-        for (;;)
-        {
-            if (isConnecting)
-            {
-                uint32_t now = millis();
+    uint16_t Wifi::scan() { return WiFi.scanNetworks(); };
 
-                if (now - connectStart > 5000)
-                {
-                    this->isConnecting = false;
+    void Wifi::update() { //    <--- Called in main.cpp loop.
+      if (!(state == WifiState::CONNECTING))
+        return;
 
-                    eventBus->publish(Core::EventType::WIFI_UNABLE_TO_CONNECT, nullptr);
-                }
-            }
-
-            vTaskDelay(10);
-        }
-    }
-
-    void Wifi::connect(bool isReconnect)
-    {
-        connecting = true;
-        connectStart = millis();
-
-        this->status = WiFi.begin(WIFI_SSID, WIFI_PASSWD);
-
-        if (this->status != WL_CONNECTED)
-        {
-            eventBus->publish(Core::EventType::WIFI_NOT_CONNECTED, nullptr);
-            return;
-        }
-
-        eventBus->publish(Core::EventType::WIFI_CONNECTED, nullptr);
+      if (millis() - connectStart > 3000) {
+        WiFi.disconnect();
+        this->state = WifiState::FAIL_TO_CONNECT;
+        eventBus->publish(Core::EventType::WIFI_FAILED);
+      }
     }
 
     void Wifi::handleWifiEvent(WiFiEvent_t &wifiEvent, WiFiEventInfo_t &wifiInfo)
     {
-        switch (wifiEvent)
-        {
-        case SYSTEM_EVENT_STA_CONNECTED:
-            eventBus->publish(Core::EventType::WIFI_CONNECTED, nullptr);
-            break;
+      if(!wifiInstance)
+        return;
+      
+      switch (wifiEvent)
+      {
+      case SYSTEM_EVENT_STA_CONNECTED:
+        wifiInstance->state = WifiState::CONNECTED;
+        wifiInstance->eventBus->publish(Core::EventType::WIFI_CONNECTED);
+        break;
 
-        case SYSTEM_EVENT_STA_DISCONNECTED:
-            eventBus->publish(Core::EventType::WIFI_DISCONNECTED, nullptr);
-            break;
+      case SYSTEM_EVENT_STA_DISCONNECTED:
+        wifiInstance->state = WifiState::DISCONNECTED;
+        wifiInstance->eventBus->publish(Core::EventType::WIFI_DISCONNECTED);
+        break;
 
-        default:
-            break;
-        }
+      default:
+        break;
+      }
+    }
+
+    void Wifi::handleWeatherFetchReq() {
+      if(!(this->state == WifiState::DISCONNECTED))
+        eventBus->publish(Core::EventType::WIFI_FAILED);
+
+      // TODO: fetching weather api.
+      // TODO: publish response to eventBus
     }
 }

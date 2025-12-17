@@ -2,7 +2,14 @@
 #include "config.h"
 
 namespace App {
-  BluetoothApp::BluetoothApp(Core::EventBus *bus, Core::DisplayDriver *disp): eventBus(bus), display(disp) {};
+  BluetoothApp::BluetoothApp(Core::EventBus *bus, Core::DisplayDriver *disp): eventBus(bus), display(disp) {
+  
+
+    // ui button init
+    Ui::UIButton backButton(display, Ui::UIButtonType::BACK_BTN);
+    this->uiButtons[0] = &backButton;
+    this->uiButtonCount++;
+  };
 
   void BluetoothApp::onEnter() {
     // subscribe to event
@@ -20,9 +27,6 @@ namespace App {
       ui->requestRender();
     });
 
-    // ui button init
-    Ui::UIButton backButton(display, Ui::UIButtonType::BACK_BUTTON);
-    this->uiButtons[0] = &backButton;
 
     display->fillScreen(BG_COLOR);
   }
@@ -39,6 +43,14 @@ namespace App {
     snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d", this->latestTime.hour, this->latestTime.minute);
 
     display->renderStatusBar(timeBuf, this->latestBattPercent);
+
+    for (size_t btnIndex = 0; btnIndex < this->uiButtonCount; btnIndex++) {
+      if(btnIndex == this->selectedIndex) {
+        uiButtons[btnIndex]->render(true);
+        return;
+      }
+      uiButtons[btnIndex]->render(false);
+    }
   }
 
   void BluetoothApp::onButton(Service::ButtonPayload btn) {

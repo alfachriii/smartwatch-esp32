@@ -4,9 +4,9 @@
 
 namespace Service {
   struct Times{
-    uint8_t hour;
-    uint8_t minute;
-    uint8_t second;
+    uint8_t hour = 0;
+    uint8_t minute = 0;
+    uint8_t second = 0;
   };
   
   class Time {
